@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HanariDev</title>
+<meta name="description" content="HanariDev: розробка, хостинг і технічна підтримка сайтів.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: night ink-wash scene fixed behind the page (moon, mountains, blossoming branch, falling petals);
+   content scrolls over it in one left-weighted column, with lacquer-panel cards for services and contact. */
+:root {
+  --ink: #0b0f17;          /* kon: deep indigo night, page ground */
+  --paper: #ece6da;        /* washi text */
+  --paper-dim: #a8a59e;    /* secondary text */
+  --cinnabar: #b5462f;     /* shu: muted torii vermilion, used sparingly */
+  --gold: #c2a26b;         /* kincha: muted gold */
+  --sakura: #e3c1c9;       /* pale blossom */
+  --line: rgba(194, 162, 107, 0.18);
+  --panel: rgba(11, 15, 23, 0.62);
+
+  --font-display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --step--1: 0.85rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.7rem;
+  --step-3: clamp(2rem, 4vw, 2.9rem);
+  --step-4: clamp(2.6rem, 7vw, 5.4rem);
+
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 30; background: var(--ink);
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+
+/* background scene */
+.scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.scrim {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(11, 15, 23, 0.82) 0%, rgba(11, 15, 23, 0.45) 45%, rgba(11, 15, 23, 0) 75%);
+}
+.page { position: relative; z-index: 2; }
+
+.wrap {
+  width: 100%; max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* header */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: rgba(11, 15, 23, 0.7);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.55rem; letter-spacing: 0.02em; }
+.brand-name span { color: var(--gold); }
+.nav { display: flex; gap: 22px; margin-left: auto; }
+.nav a { text-decoration: none; color: var(--paper-dim); font-size: var(--step--1); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; transition: color .2s; }
+.nav a:hover { color: var(--paper); }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; flex: none; }
+.lang button {
+  border: 0; background: transparent; color: var(--paper-dim); cursor: pointer;
+  font: 700 0.78rem/1 var(--font-body); letter-spacing: 0.08em; padding: 7px 11px; border-radius: 999px;
+}
+.lang button[aria-pressed="true"] { background: var(--gold); color: var(--ink); }
+@media (max-width: 760px) { .nav { display: none; } .lang { margin-left: auto; } }
+
+/* hero */
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: clamp(64px, 12vw, 140px) clamp(56px, 9vw, 110px); }
+.hero-text { max-width: 640px; min-width: 0; }
+.eyebrow { font-size: var(--step--1); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px; }
+h1 {
+  font-family: var(--font-display); font-weight: 600; font-size: var(--step-4);
+  line-height: 1.02; margin: 0 0 24px; text-wrap: balance; letter-spacing: -0.01em;
+}
+h1 em { font-style: italic; color: var(--sakura); }
+.lede { font-size: var(--step-1); color: var(--paper-dim); max-width: 34em; margin: 0 0 36px; line-height: 1.6; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer;
+  font: 700 0.95rem/1 var(--font-body); letter-spacing: 0.02em;
+  padding: 16px 26px; border-radius: 4px; border: 1px solid transparent;
+  transition: transform .2s, background .2s, border-color .2s;
+}
+.btn-primary { background: var(--cinnabar); color: var(--paper); }
+.btn-primary:hover { transform: translateY(-2px); background: #c4533b; }
+.btn-ghost { border-color: var(--line); color: var(--paper); background: rgba(11, 15, 23, 0.35); }
+.btn-ghost:hover { border-color: var(--gold); }
+
+/* sections */
+section { scroll-margin-top: 80px; }
+.section .wrap { padding-block: clamp(56px, 9vw, 104px); }
+.section-head { display: flex; align-items: flex-end; gap: 20px; margin-bottom: 44px; flex-wrap: wrap; }
+.section-head .glyph { width: 64px; height: 64px; color: var(--cinnabar); flex: none; }
+.section-head .glyph svg, .card .hz svg, .bigseal svg { width: 100%; height: 100%; display: block; }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: var(--step-3); line-height: 1.1; margin: 0; text-wrap: balance; }
+.section-head p { margin: 8px 0 0; color: var(--paper-dim); max-width: 40em; }
+.head-text { min-width: 0; flex: 1 1 320px; }
+.brush-rule { height: 3px; border: 0; margin: 0; background: linear-gradient(90deg, var(--cinnabar), rgba(181, 70, 47, 0.35) 40%, transparent 80%); border-radius: 2px; }
+
+/* services */
+.services { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 960px) { .services { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .services { grid-template-columns: minmax(0, 1fr); } }
+.card {
+  position: relative; min-width: 0;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 28px 26px 26px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transition: transform .3s, border-color .3s;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.card:hover { transform: translateY(-4px); border-color: rgba(194, 162, 107, 0.45); }
+.card .hz { width: 46px; height: 46px; color: var(--gold); transition: color .3s; }
+.card:hover .hz { color: var(--sakura); }
+.card.core .hz { color: var(--cinnabar); }
+.card h3 { font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; line-height: 1.15; margin: 0; }
+.card p { margin: 0; color: var(--paper-dim); }
+.card ul { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.card li { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.03em; color: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
+.tag-core { position: absolute; top: 22px; right: 22px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cinnabar); }
+
+/* process */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; counter-reset: none; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.step { min-width: 0; display: grid; gap: 10px; align-content: start; }
+.step .num { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 3.2rem; line-height: 1; color: var(--sakura); font-variant-numeric: lining-nums; }
+.step h3 { font-family: var(--font-display); font-size: var(--step-2); font-weight: 600; margin: 0; line-height: 1.15; }
+.step p { margin: 0; color: var(--paper-dim); }
+.step .rule { height: 1px; background: var(--line); }
+
+/* contact */
+.contact-panel {
+  position: relative; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px;
+  padding: clamp(28px, 5vw, 56px);
+}
+@media (max-width: 860px) { .contact-panel { grid-template-columns: minmax(0, 1fr); } }
+.contact-panel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2280%22%20height%3D%2240%22%20viewBox%3D%220%200%2080%2040%22%3E%3Cg%20transform%3D%22translate%280%200%29%22%3E%3Ccircle%20r%3D%2240%22%20fill%3D%22%230e131d%22/%3E%3Ccircle%20r%3D%2236%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2880%200%29%22%3E%3Ccircle%20r%3D%2240%22%20fill%3D%22%230e131d%22/%3E%3Ccircle%20r%3D%2236%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2840%2020%29%22%3E%3Ccircle%20r%3D%2240%22%20fill%3D%22%230e131d%22/%3E%3Ccircle%20r%3D%2236%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%280%2040%29%22%3E%3Ccircle%20r%3D%2240%22%20fill%3D%22%230e131d%22/%3E%3Ccircle%20r%3D%2236%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2880%2040%29%22%3E%3Ccircle%20r%3D%2240%22%20fill%3D%22%230e131d%22/%3E%3Ccircle%20r%3D%2236%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2228%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2220%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3Ccircle%20r%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23c2a26b%22%20stroke-width%3D%221.5%22/%3E%3C/g%3E%3C/svg%3E"); background-size: 80px 40px;
+  -webkit-mask-image: linear-gradient(200deg, #000 0%, transparent 55%); mask-image: linear-gradient(200deg, #000 0%, transparent 55%);
+}
+.contact-intro, .contact-list { position: relative; }
+.contact-panel .bigseal {
+  position: absolute; right: -30px; bottom: -50px; width: 260px; height: 260px; color: var(--cinnabar); opacity: 0.08; pointer-events: none;
+}
+.contact-intro p { color: var(--paper-dim); font-size: var(--step-1); margin: 14px 0 0; max-width: 30em; }
+.contact-list { display: grid; gap: 16px; align-content: center; position: relative; }
+.contact-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  border-top: 1px solid var(--line); padding-top: 16px;
+}
+.contact-item .label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.contact-item .value { display: block; font-family: var(--font-display); font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; user-select: all; font-variant-numeric: tabular-nums; }
+.contact-item .value:hover { color: var(--sakura); }
+.copy {
+  border: 1px solid var(--line); background: transparent; color: var(--paper); cursor: pointer;
+  font: 600 0.8rem/1 var(--font-body); padding: 10px 14px; border-radius: 4px; white-space: nowrap;
+}
+.copy:hover { border-color: var(--gold); }
+.placeholder-badge {
+  font-size: 0.65rem; letter-spacing: 0.08em; color: var(--ink); background: var(--sakura);
+  border-radius: 3px; padding: 2px 6px;
+}
+
+footer .wrap { padding-block: 32px 40px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; color: var(--paper-dim); font-size: var(--step--1); border-top: 1px solid var(--line); }
+footer .wrap > :last-child { margin-left: auto; }
+
+@media (max-width: 760px) {
+  .scrim { background: linear-gradient(180deg, rgba(11, 15, 23, 0) 0%, rgba(11, 15, 23, 0.55) 28%, rgba(11, 15, 23, 0.78) 45%, rgba(11, 15, 23, 0.7) 100%); }
+  .hero .wrap { padding-top: min(46vh, 300px); }
+}
+
+/* load-in: visible at rest, gentle rise when motion is allowed */
+@media (prefers-reduced-motion: no-preference) {
+  .rise { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+  .rise.d1 { animation-delay: .1s; } .rise.d2 { animation-delay: .2s; } .rise.d3 { animation-delay: .3s; } .rise.d4 { animation-delay: .45s; }
+  @keyframes rise { from { transform: translateY(14px); opacity: .001; } to { transform: none; opacity: 1; } }
+}
+</style>
+</head>
+<body>
+
+<div class="scene" aria-hidden="true">
+  <canvas id="scenery"></canvas>
+  <canvas id="petals"></canvas>
+</div>
+<div class="scrim" aria-hidden="true"></div>
+
+<div class="page">
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="#top" aria-label="HanariDev">
+        <span class="brand-name">Hanari<span>Dev</span></span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#services" data-i18n="nav.services">Послуги</a>
+        <a href="#process" data-i18n="nav.process">Як ми працюємо</a>
+        <a href="#contact" data-i18n="nav.contact">Контакти</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Мова / Language">
+        <button type="button" id="lang-uk" data-lang="uk" aria-pressed="true">УКР</button>
+        <button type="button" id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-text">
+          <p class="eyebrow rise" data-i18n="hero.eyebrow">Веб-студія · Розробка · Хостинг · Підтримка</p>
+          <h1 class="rise d1" data-i18n-html="hero.title">Сайти, що <em>розквітають</em> і не в’януть</h1>
+          <p class="lede rise d2" data-i18n="hero.lede">HanariDev створює сайти під ключ, розміщує їх на надійних серверах і доглядає за ними щодня. Ви займаєтесь своєю справою, а ваш сайт просто працює.</p>
+          <div class="cta-row rise d3">
+            <a class="btn btn-primary" href="#contact" data-i18n="hero.cta">Обговорити проєкт</a>
+            <a class="btn btn-ghost" href="#services" data-i18n="hero.cta2">Наші послуги</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="glyph" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(0 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(72 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(144 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(216 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(288 24 24)"/><circle cx="24" cy="24" r="2.2"/></svg></span>
+          <div class="head-text">
+            <h2 data-i18n="services.title">Послуги</h2>
+            <p data-i18n="services.sub">Усе, що потрібно сайту, в одних руках: від першого макета до щоденного догляду.</p>
+          </div>
+        </div>
+        <div class="services">
+          <article class="card core">
+            <span class="tag-core" data-i18n="services.core">Основне</span>
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(0 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(72 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(144 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(216 24 24)"/><path d="M24 23 C30 19 31 11 26.6 7.5 L24 10 L21.4 7.5 C17 11 18 19 24 23 Z" transform="rotate(288 24 24)"/><circle cx="24" cy="24" r="2.2"/></svg></span>
+            <h3 data-i18n="s1.t">Розробка сайтів</h3>
+            <p data-i18n="s1.d">Лендинги, корпоративні сайти та інтернет-магазини. Адаптивні під телефон, швидкі, із зручною адмінкою для ваших змін.</p>
+            <ul><li data-i18n="s1.a">Лендинг</li><li data-i18n="s1.b">Сайт компанії</li><li data-i18n="s1.c">Інтернет-магазин</li></ul>
+          </article>
+          <article class="card core">
+            <span class="tag-core" data-i18n="services.core">Основне</span>
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 Q24 8 43 12.5"/><path d="M9 19 H39"/><path d="M15.5 12 L13.5 42"/><path d="M32.5 12 L34.5 42"/><path d="M24 11 V19"/></svg></span>
+            <h3 data-i18n="s2.t">Хостинг</h3>
+            <p data-i18n="s2.d">Розміщуємо ваш сайт на наших серверах і стежимо, щоб він завжди був доступний.</p>
+            <ul><li data-i18n="s2.a">SSL-сертифікат</li><li data-i18n="s2.b">Резервні копії</li><li data-i18n="s2.c">Моніторинг</li></ul>
+          </article>
+          <article class="card core">
+            <span class="tag-core" data-i18n="services.core">Основне</span>
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="24.0,4.0 41.3,14.0 41.3,34.0 24.0,44.0 6.7,34.0 6.7,14.0"/><polygon points="24.0,13.0 33.5,18.5 33.5,29.5 24.0,35.0 14.5,29.5 14.5,18.5"/><circle cx="24" cy="24" r="2.2"/></svg></span>
+            <h3 data-i18n="s3.t">Технічна підтримка</h3>
+            <p data-i18n="s3.d">Оновлюємо, захищаємо та виправляємо. Змінюємо тексти, ціни й фото за вашим запитом.</p>
+            <ul><li data-i18n="s3.a">Оновлення</li><li data-i18n="s3.b">Захист від зламу</li><li data-i18n="s3.c">Зміни контенту</li></ul>
+          </article>
+          <article class="card">
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.2 30.0 A24 24 0 0 1 44.8 30.0"/><path d="M15.3 37.0 A10 10 0 0 1 32.7 37.0"/><path d="M20.5 40.0 L3.2 30.0"/><path d="M21.6 38.8 L9.9 22.6"/><path d="M23.2 38.1 L19.0 18.5"/><path d="M24.8 38.1 L29.0 18.5"/><path d="M26.4 38.8 L38.1 22.6"/><path d="M27.5 40.0 L44.8 30.0"/><circle cx="24" cy="42" r="1.8"/></svg></span>
+            <h3 data-i18n="s4.t">Дизайн</h3>
+            <p data-i18n="s4.d">Унікальний дизайн під ваш бренд: від прототипу до готового макета для всіх екранів.</p>
+          </article>
+          <article class="card">
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 40 A20 20 0 0 1 44 40"/><path d="M10.5 40 A13.5 13.5 0 0 1 37.5 40"/><path d="M17 40 A7 7 0 0 1 31 40"/><path d="M4 44 H44"/></svg></span>
+            <h3 data-i18n="s5.t">SEO і швидкість</h3>
+            <p data-i18n="s5.d">Технічне SEO, оптимізація швидкості завантаження та налаштування аналітики, щоб клієнти вас знаходили.</p>
+          </article>
+          <article class="card">
+            <span class="hz" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M24 3 V9"/><path d="M17 9 H31 M17 39 H31"/><path d="M18 11 C8 16 8 32 18 37 H30 C40 32 40 16 30 11 Z"/><path d="M12.5 18 H35.5 M11 24 H37 M12.5 30 H35.5"/><path d="M24 39 V45"/></svg></span>
+            <h3 data-i18n="s6.t">Домени та пошта</h3>
+            <p data-i18n="s6.d">Реєструємо домен, налаштовуємо DNS і корпоративну пошту на вашому імені.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="glyph" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M30 6.5 A18.5 18.5 0 1 0 41.5 20"/></svg></span>
+          <div class="head-text">
+            <h2 data-i18n="process.title">Як ми працюємо</h2>
+            <p data-i18n="process.sub">Чотири кроки від ідеї до сайту, який працює роками.</p>
+          </div>
+        </div>
+        <div class="steps">
+          <div class="step"><span class="num" aria-hidden="true">1</span><div class="rule"></div><h3 data-i18n="p1.t">Розмова</h3><p data-i18n="p1.d">Обговорюємо ваші цілі, терміни та бюджет. Пропонуємо рішення і називаємо ціну.</p></div>
+          <div class="step"><span class="num" aria-hidden="true">2</span><div class="rule"></div><h3 data-i18n="p2.t">Дизайн і розробка</h3><p data-i18n="p2.d">Малюємо макет, погоджуємо його з вами і створюємо сайт.</p></div>
+          <div class="step"><span class="num" aria-hidden="true">3</span><div class="rule"></div><h3 data-i18n="p3.t">Запуск</h3><p data-i18n="p3.d">Підключаємо домен, розміщуємо сайт на хостингу й перевіряємо кожну сторінку.</p></div>
+          <div class="step"><span class="num" aria-hidden="true">4</span><div class="rule"></div><h3 data-i18n="p4.t">Догляд</h3><p data-i18n="p4.d">Стежимо за роботою сайту, оновлюємо його та вносимо зміни, коли вам потрібно.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="wrap">
+        <div class="contact-panel">
+          <span class="bigseal" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 40 A20 20 0 0 1 44 40"/><path d="M10.5 40 A13.5 13.5 0 0 1 37.5 40"/><path d="M17 40 A7 7 0 0 1 31 40"/><path d="M4 44 H44"/></svg></span>
+          <div class="contact-intro">
+            <hr class="brush-rule">
+            <h2 style="margin-top:22px" data-i18n="contact.title">Обговорімо ваш сайт</h2>
+            <p data-i18n="contact.sub">Зателефонуйте нам. Розповімо, скільки коштуватиме ваш сайт і як швидко ми його запустимо.</p>
+          </div>
+          <div class="contact-list">
+            <div class="contact-item">
+              <div>
+                <span class="label"><span data-i18n="contact.phone">Телефон</span><span class="placeholder-badge" data-placeholder hidden>PLACEHOLDER</span></span>
+                <a class="value" id="phone-link" href="#">—</a>
+              </div>
+              <button type="button" class="copy" id="copy-phone" data-copy="phone" data-i18n="contact.copy">Копіювати</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© <span id="year">2026</span> HanariDev</span>
+      <span data-i18n="footer.tag">Розробка, хостинг і підтримка сайтів</span>
+      <a href="#top" data-i18n="footer.top">Нагору ↑</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   CONTACT DETAILS: replace these with the real ones,
+   then set `placeholder` to false to hide the PLACEHOLDER badges.
+   ============================================================ */
+const CONFIG = {
+  phone: "+380 68 732 20 58",
+  placeholder: false
+};
+
+/* ---------- translations ---------- */
+const I18N = {
+  uk: {
+    "nav.services": "Послуги", "nav.process": "Як ми працюємо", "nav.contact": "Контакти",
+    "hero.eyebrow": "Веб-студія · Розробка · Хостинг · Підтримка",
+    "hero.title": "Сайти, що <em>розквітають</em> і не в’януть",
+    "hero.lede": "HanariDev створює сайти під ключ, розміщує їх на надійних серверах і доглядає за ними щодня. Ви займаєтесь своєю справою, а ваш сайт просто працює.",
+    "hero.cta": "Обговорити проєкт", "hero.cta2": "Наші послуги",
+    "services.title": "Послуги", "services.core": "Основне",
+    "services.sub": "Усе, що потрібно сайту, в одних руках: від першого макета до щоденного догляду.",
+    "s1.t": "Розробка сайтів", "s1.d": "Лендинги, корпоративні сайти та інтернет-магазини. Адаптивні під телефон, швидкі, із зручною адмінкою для ваших змін.",
+    "s1.a": "Лендинг", "s1.b": "Сайт компанії", "s1.c": "Інтернет-магазин",
+    "s2.t": "Хостинг", "s2.d": "Розміщуємо ваш сайт на наших серверах і стежимо, щоб він завжди був доступний.",
+    "s2.a": "SSL-сертифікат", "s2.b": "Резервні копії", "s2.c": "Моніторинг",
+    "s3.t": "Технічна підтримка", "s3.d": "Оновлюємо, захищаємо та виправляємо. Змінюємо тексти, ціни й фото за вашим запитом.",
+    "s3.a": "Оновлення", "s3.b": "Захист від зламу", "s3.c": "Зміни контенту",
+    "s4.t": "Дизайн", "s4.d": "Унікальний дизайн під ваш бренд: від прототипу до готового макета для всіх екранів.",
+    "s5.t": "SEO і швидкість", "s5.d": "Технічне SEO, оптимізація швидкості завантаження та налаштування аналітики, щоб клієнти вас знаходили.",
+    "s6.t": "Домени та пошта", "s6.d": "Реєструємо домен, налаштовуємо DNS і корпоративну пошту на вашому імені.",
+    "process.title": "Як ми працюємо", "process.sub": "Чотири кроки від ідеї до сайту, який працює роками.",
+    "p1.t": "Розмова", "p1.d": "Обговорюємо ваші цілі, терміни та бюджет. Пропонуємо рішення і називаємо ціну.",
+    "p2.t": "Дизайн і розробка", "p2.d": "Малюємо макет, погоджуємо його з вами і створюємо сайт.",
+    "p3.t": "Запуск", "p3.d": "Підключаємо домен, розміщуємо сайт на хостингу й перевіряємо кожну сторінку.",
+    "p4.t": "Догляд", "p4.d": "Стежимо за роботою сайту, оновлюємо його та вносимо зміни, коли вам потрібно.",
+    "contact.title": "Обговорімо ваш сайт",
+    "contact.sub": "Зателефонуйте нам. Розповімо, скільки коштуватиме ваш сайт і як швидко ми його запустимо.",
+    "contact.phone": "Телефон", "contact.email": "Email", "contact.copy": "Копіювати", "contact.copied": "Скопійовано",
+    "footer.tag": "Розробка, хостинг і підтримка сайтів", "footer.top": "Нагору ↑",
+    "meta.title": "HanariDev | Розробка, хостинг і підтримка сайтів"
+  },
+  en: {
+    "nav.services": "Services", "nav.process": "How we work", "nav.contact": "Contact",
+    "hero.eyebrow": "Web studio · Development · Hosting · Maintenance",
+    "hero.title": "Websites that <em>bloom</em> and never wilt",
+    "hero.lede": "HanariDev builds your website from start to finish, hosts it on reliable servers and looks after it every day. You run your business while your site keeps working.",
+    "hero.cta": "Discuss a project", "hero.cta2": "Our services",
+    "services.title": "Services", "services.core": "Core",
+    "services.sub": "Everything your website needs, in one pair of hands: from the first mockup to daily care.",
+    "s1.t": "Website development", "s1.d": "Landing pages, company websites and online stores. Mobile-friendly, fast, with an easy admin panel for your own edits.",
+    "s1.a": "Landing page", "s1.b": "Company site", "s1.c": "Online store",
+    "s2.t": "Hosting", "s2.d": "We host your website on our servers and make sure it stays online.",
+    "s2.a": "SSL certificate", "s2.b": "Backups", "s2.c": "Monitoring",
+    "s3.t": "Maintenance", "s3.d": "We update, protect and fix your site, and change texts, prices and photos whenever you ask.",
+    "s3.a": "Updates", "s3.b": "Security", "s3.c": "Content changes",
+    "s4.t": "Design", "s4.d": "A design made for your brand, from the first prototype to finished layouts for every screen.",
+    "s5.t": "SEO & speed", "s5.d": "Technical SEO, page-speed optimisation and analytics setup, so customers can find you.",
+    "s6.t": "Domains & email", "s6.d": "We register your domain and set up DNS and business email on your own name.",
+    "process.title": "How we work", "process.sub": "Four steps from an idea to a website that runs for years.",
+    "p1.t": "Conversation", "p1.d": "We talk through your goals, timeline and budget, then propose a solution and a price.",
+    "p2.t": "Design & build", "p2.d": "We design the layout, agree it with you and build the site.",
+    "p3.t": "Launch", "p3.d": "We connect your domain, put the site on our hosting and check every page.",
+    "p4.t": "Care", "p4.d": "We watch over the site, keep it updated and make changes whenever you need them.",
+    "contact.title": "Let’s talk about your website",
+    "contact.sub": "Give us a call. We’ll tell you what your website will cost and how soon we can launch it.",
+    "contact.phone": "Phone", "contact.email": "Email", "contact.copy": "Copy", "contact.copied": "Copied",
+    "footer.tag": "Website development, hosting and maintenance", "footer.top": "Back to top ↑",
+    "meta.title": "HanariDev | Website development, hosting and maintenance"
+  }
+};
+
+let lang = "uk";
+function applyLang(next) {
+  lang = I18N[next] ? next : "uk";
+  const dict = I18N[lang];
+  document.documentElement.lang = lang;
+  if (dict["meta.title"]) document.title = dict["meta.title"];
+  document.querySelectorAll("[data-i18n]").forEach(el => { const v = dict[el.dataset.i18n]; if (v) el.textContent = v; });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => { const v = dict[el.dataset.i18nHtml]; if (v) el.innerHTML = v; });
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  try { localStorage.setItem("hanari-lang", lang); } catch (e) {}
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => applyLang(b.dataset.lang)));
+let saved = null;
+try { saved = localStorage.getItem("hanari-lang"); } catch (e) {}
+applyLang(saved || "uk");
+
+/* ---------- contact details ---------- */
+const phoneLink = document.getElementById("phone-link");
+phoneLink.textContent = CONFIG.phone;
+phoneLink.href = "tel:" + CONFIG.phone.replace(/[^\d+]/g, "");
+document.querySelectorAll("[data-placeholder]").forEach(el => { el.hidden = !CONFIG.placeholder; });
+document.getElementById("year").textContent = new Date().getFullYear();
+
+document.querySelectorAll(".copy").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const text = CONFIG[btn.dataset.copy];
+    const done = () => {
+      btn.textContent = I18N[lang]["contact.copied"];
+      setTimeout(() => { btn.textContent = I18N[lang]["contact.copy"]; }, 1600);
+    };
+    const fallback = () => {
+      const target = phoneLink;
+      const r = document.createRange(); r.selectNodeContents(target);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    };
+    try {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } catch (e) { fallback(); }
+  });
+});
+
+/* ---------- background scene ---------- */
+(function () {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sc = document.getElementById("scenery"), pc = document.getElementById("petals");
+  const sx = sc.getContext("2d"), px = pc.getContext("2d");
+  let W = 0, H = 0, DPR = 1;
+
+  // seeded random so the branch and mountains look the same after every resize
+  function rng(seed) { return function () { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
+
+  function drawScenery() {
+    const r = rng(7);
+    sx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    sx.clearRect(0, 0, W, H);
+    const small = W < 760;
+
+    // sky wash
+    const sky = sx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, "#080c15"); sky.addColorStop(0.55, "#111827"); sky.addColorStop(1, "#0b0f17");
+    sx.fillStyle = sky; sx.fillRect(0, 0, W, H);
+
+    // moon
+    const mr = Math.min(W, H) * (small ? 0.2 : 0.17);
+    const mx = W * (small ? 0.72 : 0.76), my = H * (small ? 0.2 : 0.26);
+    const halo = sx.createRadialGradient(mx, my, mr * 0.6, mx, my, mr * 3.2);
+    halo.addColorStop(0, "rgba(228,224,212,0.13)"); halo.addColorStop(1, "rgba(228,224,212,0)");
+    sx.fillStyle = halo; sx.fillRect(0, 0, W, H);
+    const moon = sx.createRadialGradient(mx - mr * 0.3, my - mr * 0.3, mr * 0.1, mx, my, mr);
+    moon.addColorStop(0, "#f2eee4"); moon.addColorStop(1, "#d6cfbf");
+    sx.fillStyle = moon; sx.beginPath(); sx.arc(mx, my, mr, 0, Math.PI * 2); sx.fill();
+    sx.fillStyle = "rgba(140,135,120,0.12)";
+    for (let i = 0; i < 6; i++) { sx.beginPath(); sx.arc(mx + (r() - 0.5) * mr * 1.2, my + (r() - 0.5) * mr * 1.2, mr * (0.08 + r() * 0.14), 0, Math.PI * 2); sx.fill(); }
+
+    // ink-wash mountain ridges, far to near, each fading into mist
+    const layers = [
+      { base: 0.70, amp: 0.10, col: [44, 54, 78], a: 0.55 },
+      { base: 0.78, amp: 0.09, col: [29, 37, 55], a: 0.78 },
+      { base: 0.88, amp: 0.07, col: [16, 21, 32], a: 0.96 }
+    ];
+    // Mount Fuji, snow-capped, behind the ridges
+    {
+      const fx = W * (small ? 0.42 : 0.57), peak = H * (small ? 0.5 : 0.4), base = H * 0.86;
+      const half = W * (small ? 0.62 : 0.36), top = half * 0.045;
+      const side = (s) => { // concave slopes
+        sx.quadraticCurveTo(fx + s * (top + (half - top) * 0.32), peak + (base - peak) * 0.62, fx + s * half, base);
+      };
+      sx.beginPath(); sx.moveTo(fx - top, peak); sx.lineTo(fx + top, peak); side(1); sx.lineTo(fx - half, base);
+      sx.quadraticCurveTo(fx - (top + (half - top) * 0.32), peak + (base - peak) * 0.62, fx - top, peak); sx.closePath();
+      const fg = sx.createLinearGradient(0, peak, 0, base);
+      fg.addColorStop(0, "rgba(66,80,108,0.9)"); fg.addColorStop(0.6, "rgba(34,43,62,0.65)"); fg.addColorStop(1, "rgba(14,19,29,0.2)");
+      sx.fillStyle = fg; sx.fill();
+      // snow cap with jagged lower edge
+      const sh = (base - peak) * 0.16;
+      const capW = (y) => top + (half - top) * Math.pow((y - peak) / (base - peak), 1.45) * 1.02;
+      sx.beginPath(); sx.moveTo(fx - top, peak); sx.lineTo(fx + top, peak);
+      for (let i = 0; i <= 8; i++) { const y = peak + sh * (i / 8); sx.lineTo(fx + capW(y), y); }
+      const teeth = 5, wEnd = capW(peak + sh);
+      for (let i = 0; i <= teeth * 2; i++) {
+        const x = fx + wEnd - (2 * wEnd) * (i / (teeth * 2));
+        sx.lineTo(x, peak + sh + (i % 2 ? sh * (0.25 + r() * 0.45) : 0));
+      }
+      for (let i = 8; i >= 0; i--) { const y = peak + sh * (i / 8); sx.lineTo(fx - capW(y), y); }
+      sx.closePath();
+      const sg = sx.createLinearGradient(0, peak, 0, peak + sh * 1.8);
+      sg.addColorStop(0, "rgba(236,234,228,0.9)"); sg.addColorStop(1, "rgba(176,188,208,0.4)");
+      sx.fillStyle = sg; sx.fill();
+    }
+    const ridges = [];
+    layers.forEach((L, li) => {
+      const ph = [r() * 6, r() * 6, r() * 6];
+      sx.beginPath(); sx.moveTo(0, H);
+      for (let x = 0; x <= W; x += 6) {
+        const t = x / W;
+        const y = H * (L.base - L.amp * (0.55 * Math.sin(t * 3.1 + ph[0]) + 0.3 * Math.sin(t * 7.3 + ph[1]) + 0.15 * Math.sin(t * 17 + ph[2])));
+        sx.lineTo(x, y);
+      }
+      ridges.push((x) => { const t = x / W; return H * (L.base - L.amp * (0.55 * Math.sin(t * 3.1 + ph[0]) + 0.3 * Math.sin(t * 7.3 + ph[1]) + 0.15 * Math.sin(t * 17 + ph[2]))); });
+      sx.lineTo(W, H); sx.closePath();
+      const g = sx.createLinearGradient(0, H * (L.base - L.amp), 0, H);
+      const [cr, cg, cb] = L.col;
+      g.addColorStop(0, `rgba(${cr},${cg},${cb},${L.a})`);
+      g.addColorStop(0.55, `rgba(${cr},${cg},${cb},${L.a * 0.55})`);
+      g.addColorStop(1, `rgba(11,15,23,0.9)`);
+      sx.fillStyle = g; sx.fill();
+      // mist band
+      const mist = sx.createLinearGradient(0, H * (L.base - 0.02), 0, H * (L.base + 0.08));
+      mist.addColorStop(0, "rgba(190,200,222,0)"); mist.addColorStop(0.5, `rgba(190,200,222,${0.05 - li * 0.012})`); mist.addColorStop(1, "rgba(190,200,222,0)");
+      sx.fillStyle = mist; sx.fillRect(0, H * (L.base - 0.02), W, H * 0.1);
+      if (li === 1) drawTorii(W * (small ? 0.8 : 0.66), ridges[1](W * (small ? 0.8 : 0.66)) + 6, Math.min(W, H) * (small ? 0.12 : 0.1));
+    });
+
+    // blossoming branch reaching in from the right edge, silhouetted against the moon
+    const blossoms = [];
+    const scale = Math.min(W, H) * (small ? 0.24 : 0.2);
+    function branch(x, y, ang, len, th, depth) {
+      const steps = 5;
+      let cx = x, cy = y;
+      for (let i = 0; i < steps; i++) {
+        const a = ang + (r() - 0.5) * 0.5;
+        const nx = cx + Math.cos(a) * len / steps, ny = cy + Math.sin(a) * len / steps;
+        const t0 = th * (1 - i / steps * 0.35), t1 = th * (1 - (i + 1) / steps * 0.35);
+        sx.strokeStyle = "#05070c"; sx.lineCap = "round";
+        sx.lineWidth = (t0 + t1) / 2; sx.beginPath(); sx.moveTo(cx, cy); sx.lineTo(nx, ny); sx.stroke();
+        cx = nx; cy = ny;
+        if (depth <= 2 && r() < 0.55) blossoms.push([cx + (r() - 0.5) * 10, cy + (r() - 0.5) * 10, 0.6 + r() * 0.6]);
+      }
+      if (depth > 0 && th > 1.2) {
+        const kids = depth > 3 ? 2 : 2 + (r() < 0.4 ? 1 : 0);
+        for (let k = 0; k < kids; k++) branch(cx, cy, ang + (r() - 0.5) * 1.3 + (k === 0 ? -0.15 : 0.2), len * (0.62 + r() * 0.2), th * 0.62, depth - 1);
+      } else {
+        blossoms.push([cx, cy, 0.9 + r() * 0.5]);
+      }
+    }
+    branch(W + 20, H * (small ? 0.06 : 0.1), Math.PI * 0.93, scale * 1.4, small ? 11 : 15, 5);
+    branch(W + 20, H * (small ? 0.28 : 0.42), Math.PI * 1.08, scale * 0.9, small ? 7 : 9, 4);
+
+    blossoms.forEach(([bx, by, s]) => drawFlower(sx, bx, by, s * (small ? 6 : 8), r() * Math.PI, r()));
+  }
+
+  // torii gate: two pillars, lower tie beam (nuki), upswept top lintel (kasagi)
+  function drawTorii(x, y, s) {
+    sx.save(); sx.translate(x, y);
+    sx.fillStyle = "rgba(181,70,47,0.92)";
+    const pw = s * 0.07, span = s * 0.36, h = s;
+    sx.beginPath(); sx.moveTo(-span - pw, 0); sx.lineTo(-span + pw * 0.2, -h); sx.lineTo(-span + pw * 1.1, -h); sx.lineTo(-span + pw, 0); sx.fill();
+    sx.beginPath(); sx.moveTo(span + pw, 0); sx.lineTo(span - pw * 0.2, -h); sx.lineTo(span - pw * 1.1, -h); sx.lineTo(span - pw, 0); sx.fill();
+    sx.fillRect(-span - s * 0.12, -h * 0.72, (span + s * 0.12) * 2, s * 0.06);           // nuki
+    sx.fillRect(-pw * 0.6, -h * 0.94, pw * 1.2, h * 0.24);                              // gakuzuka
+    sx.fillStyle = "rgba(20,12,14,0.95)";                                               // kasagi, black-capped
+    sx.beginPath();
+    sx.moveTo(-span - s * 0.3, -h * 1.02 - s * 0.06);
+    sx.quadraticCurveTo(0, -h * 0.9, span + s * 0.3, -h * 1.02 - s * 0.06);
+    sx.lineTo(span + s * 0.26, -h * 0.9);
+    sx.quadraticCurveTo(0, -h * 0.82, -span - s * 0.26, -h * 0.9);
+    sx.closePath(); sx.fill();
+    sx.fillStyle = "rgba(181,70,47,0.92)";
+    sx.beginPath();
+    sx.moveTo(-span - s * 0.24, -h * 0.9);
+    sx.quadraticCurveTo(0, -h * 0.82, span + s * 0.24, -h * 0.9);
+    sx.lineTo(span + s * 0.2, -h * 0.83);
+    sx.quadraticCurveTo(0, -h * 0.76, -span - s * 0.2, -h * 0.83);
+    sx.closePath(); sx.fill();
+    sx.restore();
+  }
+
+  function drawFlower(ctx, x, y, R, rot, tone) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+    const pink = tone < 0.3 ? "#f6e8eb" : tone < 0.7 ? "#ebcbd3" : "#d8a6b4";
+    for (let i = 0; i < 5; i++) {
+      ctx.rotate(Math.PI * 2 / 5);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(R * 0.55, -R * 0.25, R * 0.6, -R * 0.95, R * 0.12, -R * 1.05);
+      ctx.lineTo(0, -R * 0.88);
+      ctx.lineTo(-R * 0.12, -R * 1.05);
+      ctx.bezierCurveTo(-R * 0.6, -R * 0.95, -R * 0.55, -R * 0.25, 0, 0);
+      ctx.fillStyle = pink; ctx.globalAlpha = 0.92; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "#94394c"; ctx.beginPath(); ctx.arc(0, 0, R * 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#c2a26b";
+    for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; ctx.beginPath(); ctx.arc(Math.cos(a) * R * 0.35, Math.sin(a) * R * 0.35, R * 0.06, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+
+  // petal sprites, pre-rendered once
+  function petalSprite(c1, c2) {
+    const c = document.createElement("canvas"); c.width = 40; c.height = 48;
+    const g = c.getContext("2d"); g.translate(20, 24);
+    const w = 34, h = 44;
+    g.beginPath();
+    g.moveTo(0, h / 2);
+    g.bezierCurveTo(-w * 0.62, h * 0.18, -w * 0.5, -h * 0.42, -w * 0.18, -h / 2);
+    g.lineTo(0, -h * 0.36);
+    g.lineTo(w * 0.18, -h / 2);
+    g.bezierCurveTo(w * 0.5, -h * 0.42, w * 0.62, h * 0.18, 0, h / 2);
+    const grad = g.createLinearGradient(0, h / 2, 0, -h / 2);
+    grad.addColorStop(0, c2); grad.addColorStop(1, c1);
+    g.fillStyle = grad; g.fill();
+    g.strokeStyle = "rgba(150,60,85,0.2)"; g.lineWidth = 1; g.beginPath(); g.moveTo(0, h / 2 - 2); g.lineTo(0, -h * 0.2); g.stroke();
+    return c;
+  }
+  const sprites = [
+    petalSprite("#fbf1f3", "#e6bdc8"),
+    petalSprite("#f4dbe1", "#d59cad"),
+    petalSprite("#fffafb", "#eed3da"),
+    petalSprite("#eed0d8", "#c78a9b")
+  ];
+
+  let petals = [];
+  function makePetal(atTop) {
+    const z = 0.35 + Math.random() * 0.9;
+    return {
+      x: Math.random() * W * 1.2 - W * 0.1,
+      y: atTop ? -30 - Math.random() * H * 0.3 : Math.random() * H,
+      z, s: (0.32 + Math.random() * 0.22) * z,
+      vy: (0.35 + Math.random() * 0.5) * z + 0.25,
+      vx: 0, rot: Math.random() * Math.PI * 2, vr: (Math.random() - 0.5) * 0.04,
+      flip: Math.random() * Math.PI * 2, vf: 0.02 + Math.random() * 0.04,
+      sway: Math.random() * Math.PI * 2, img: sprites[(Math.random() * sprites.length) | 0]
+    };
+  }
+  function populate() {
+    const target = Math.min(150, Math.round(W * H / 11000));
+    while (petals.length < target) petals.push(makePetal(false));
+    if (petals.length > target) petals.length = target;
+    petals.sort((a, b) => a.z - b.z);
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    [sc, pc].forEach(c => { c.width = Math.round(W * DPR); c.height = Math.round(H * DPR); });
+    drawScenery(); populate();
+    if (reduce) drawPetals(0);
+  }
+
+  const mouse = { x: -999, y: -999 };
+  addEventListener("pointermove", e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+  addEventListener("pointerleave", () => { mouse.x = mouse.y = -999; });
+  // click anywhere that is not a control to release a small burst of petals
+  addEventListener("pointerdown", e => {
+    if (reduce || e.target.closest("a, button")) return;
+    for (let i = 0; i < 14; i++) {
+      const p = makePetal(false); p.x = e.clientX; p.y = e.clientY; p.z = 0.9 + Math.random() * 0.3; p.s = 0.45 * p.z;
+      const a = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 4; p.vx = Math.cos(a) * sp; p.vy = Math.sin(a) * sp - 1.5;
+      petals.push(p);
+    }
+    if (petals.length > 260) petals.splice(0, petals.length - 260);
+  });
+
+  let wind = 0, last = 0;
+  function drawPetals(t) {
+    px.setTransform(DPR, 0, 0, DPR, 0, 0);
+    px.clearRect(0, 0, W, H);
+    const gust = Math.max(0, Math.sin(t * 0.00021) * Math.sin(t * 0.00067)) * 2.2;
+    wind = 0.45 + Math.sin(t * 0.00013) * 0.35 + gust;
+    for (const p of petals) {
+      p.sway += 0.012;
+      const target = wind * p.z + Math.sin(p.sway) * 0.6 * p.z;
+      p.vx += (target - p.vx) * 0.02;
+      const fall = (0.35 + 0.5 * p.z) * 0.6 + 0.25;
+      p.vy += (fall - p.vy) * 0.02;
+      const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+      if (d2 < 14400) { const d = Math.sqrt(d2) || 1, f = (1 - d / 120) * 1.4; p.vx += dx / d * f; p.vy += dy / d * f; }
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr + p.vx * 0.004; p.flip += p.vf;
+      if (p.y > H + 40 || p.x > W + 60 || p.x < -80) Object.assign(p, makePetal(true), { x: Math.random() * W * 1.1 - W * 0.3 });
+      px.save();
+      px.translate(p.x, p.y); px.rotate(p.rot); px.scale(Math.cos(p.flip) * p.s, p.s);
+      px.globalAlpha = 0.35 + p.z * 0.45;
+      px.drawImage(p.img, -20, -24);
+      px.restore();
+    }
+  }
+  function loop(t) {
+    if (!document.hidden) drawPetals(t);
+    requestAnimationFrame(loop);
+  }
+
+  let rt;
+  addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(resize, 120); });
+  resize();
+  if (!reduce) requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
